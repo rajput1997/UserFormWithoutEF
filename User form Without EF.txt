@@ -1,0 +1,137 @@
+                                                            Withut EF User Form
+DataBase 
+create table 
+
+     create table Employee(
+Userid int  not null primary key identity(1,1),
+Username varchar(100),
+Uemail varchar(50),
+Pwd varchar(50)
+);
+select * from Employee;
+
+
+UserCONTROLLER(Controller)
+   
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+using UserForm.Models;
+using System.Data.SqlClient;
+
+namespace UserForm.Controllers
+{
+    public class UserController : Controller
+    {
+        public IActionResult Index()
+        {
+            return View();
+        }
+        public IActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Create(User ur)
+
+        {
+            string connection = "Data Source=DESKTOP-TFBQ28G\\MSSQLSERVER1;Initial Catalog=LoginForm;Integrated Security=True";
+            using (SqlConnection sqlconn= new SqlConnection(connection))
+            {
+                string sqlquery="insert into Employee(Username,Uemail,Pwd)values('" +ur.Username+ "','" + ur.Uemail + "','" + ur.Pwd +"' )";
+                    using (SqlCommand sqlcomm = new SqlCommand(sqlquery, sqlconn))
+                {
+                    sqlconn.Open();
+                    sqlcomm.ExecuteNonQuery();
+                    ViewData["Message"] = "The  New Employee" + ur.Username + " Is Sucesfully..!";
+                }
+            }
+            return View(ur);
+        }
+    }
+}
+
+User.cs(Model)
+
+
+    using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using UserForm.Models;
+
+namespace UserForm.Models
+{
+    public class User
+    {
+        [Key]
+
+       
+        public int Userid { get; set; }
+
+        [Display(Name = "Username")]
+        [Required(ErrorMessage = "Plase Enter Username ")]
+        public string Username{ get; set; }
+        [Display(Name = "Emial")]
+        [Required(ErrorMessage = "Plase Enter Emial ")]
+        public string Uemail { get; set; }
+        [Display(Name = "Password")]
+        [Required(ErrorMessage = "Plase Enter Password ")]
+        [DataType(DataType.Password)]
+        public int Pwd { get; set; }
+    }
+}
+
+
+Create View
+  @model UserForm.Models.User
+
+@{
+    ViewData["Title"] = "Create";
+}
+<h1>Employee Registrations form</h1>
+<h1>Create Form</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="Username" class="control-label"></label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Uemail" class="control-label"></label>
+                <input asp-for="Uemail" class="form-control" />
+                <span asp-validation-for="Uemail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pwd" class="control-label"></label>
+                <input asp-for="Pwd" class="form-control" />
+                <span asp-validation-for="Pwd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <b>@ViewData["Message"]</b>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+
